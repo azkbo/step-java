@@ -7,12 +7,13 @@ import com.step.gallery.modules.error.EnumError;
 
 public class DataResult {
   private int code;
-  private String message;
+  private String msg;
   private Object data;
+
 
   public DataResult(int code, String message, Object data) {
     this.code = code;
-    this.message = message;
+    this.msg = message;
     this.data = data;
   }
 
@@ -51,7 +52,7 @@ public class DataResult {
   }
 
   public String getMessage() {
-    return message;
+    return msg;
   }
 
   public Object getData() {
