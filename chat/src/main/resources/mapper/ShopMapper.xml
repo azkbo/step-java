@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mdx.hubing.model.mapper.ShopMapper">
+    <!-- 配置 查询结果的列明和实体类的属性名的对应关系; -->
+    <resultMap id="shopMap" type="com.mdx.hubing.model.entity.ShopEntity">
+        <!--主键字段的对应 -->
+        <id property="id" javaType="Integer" column="id"/>
+        <!--非主键字段的对应-->
+        <result property="uid" javaType="Integer" column="uid"/>
+        <result property="sno" javaType="Integer" column="sno"/>
+        <!--        <result property="account" javaType="String" column="account"/>-->
+        <result property="title" javaType="String" column="title"/>
+        <result property="phone" javaType="String" column="phone"/>
+        <result property="logo" javaType="String" column="logo"/>
+        <result property="imgs" javaType="String" column="imgs"/>
+        <result property="address" javaType="String" column="address"/>
+        <result property="intro" javaType="String" column="intro"/>
+        <result property="openTime" javaType="String" column="open_time"/>
+        <result property="closeTime" javaType="String" column="close_time"/>
+
+        <result property="lat" javaType="DOUBLE" column="lat"/>
+        <result property="lng" javaType="DOUBLE" column="lng"/>
+        <result property="status" javaType="Integer" column="status"/>
+    </resultMap>
+
+    <select id="queryShop" resultMap="shopMap">
+        SELECT * FROM shop
+        <where>
+            <if test="uid!=null and uid!=0">
+                uid=#{uid};
+            </if>
+        </where>
+    </select>
+
+    <select id="shopDetail" resultMap="shopMap">
+        SELECT * FROM shop where id=#{id};
+    </select>
+
+    <insert id="addShop">
+        insert into shop (uid,sno,status,title,logo,phone,intro,address,lat,lng,open_time,close_time) values
+        (#{body.uid}, #{body.sno}, #{body.status}, #{body.title}, #{body.logo}, #{body.phone}, #{body.intro},
+        #{body.address}, #{body.lat}, #{body.lng}, #{body.openTime}, #{body.closeTime});
+    </insert>
+
+    <update id="updateShop">
+        update shop
+        <set>
+            <if test="body.title!=null and body.title!=''">
+                title = #{body.title},
+            </if>
+            <if test="body.logo!=null and body.logo!=''">
+                logo = #{body.logo},
+            </if>
+            <if test="body.intro!=null and body.intro!=''">
+                intro = #{body.intro},
+            </if>
+            <if test="body.phone!=null and body.phone!=''">
+                phone = #{body.phone},
+            </if>
+            <if test="body.address!=null and body.address!=''">
+                address = #{body.address},
+            </if>
+            <if test="body.openTime!=null">
+                open_time = #{body.openTime},
+            </if>
+            <if test="body.closeTime!=null">
+                close_time = #{body.closeTime},
+            </if>
+            <if test="body.lat!=null">
+                lat = #{body.lat},
+            </if>
+            <if test="body.lng!=null">
+                lng = #{body.lng},
+            </if>
+        </set>
+        where id = #{body.id};
+    </update>
+
+    <delete id="deleteShop">
+        delete form shop where id=#{id}
+    </delete>
+
+</mapper>

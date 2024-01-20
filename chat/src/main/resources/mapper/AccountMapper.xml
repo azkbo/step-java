@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mdx.hubing.model.mapper.AccountMapper">
+
+    <!-- 配置 查询结果的列明和实体类的属性名的对应关系; -->
+    <resultMap id="accountMap" type="com.mdx.hubing.model.dto.AccountDao">
+        <!--主键字段的对应 -->
+        <id property="id" javaType="Integer" column="id"/>
+        <!--非主键字段的对应-->
+        <result property="uid" javaType="Long" column="uid"/>
+        <!--        <result property="account" javaType="String" column="account"/>-->
+        <result property="nickname" javaType="String" column="nickname"/>
+        <result property="email" javaType="String" column="email"/>
+        <result property="phone" javaType="String" column="phone"/>
+        <result property="sign" javaType="String" column="sign"/>
+        <result property="icon" javaType="String" column="icon"/>
+        <!--        <result property="password" javaType="String" column="pwd"/>-->
+        <result property="level" javaType="Integer" column="level"/>
+        <result property="score" javaType="Integer" column="score"/>
+        <result property="grade" javaType="Integer" column="grade"/>
+        <result property="status" javaType="Integer" column="status"/>
+        <result property="channel" javaType="Integer" column="channel"/>
+        <result property="shareCode" javaType="String" column="share_code"/>
+        <result property="createTime" javaType="String" column="create_time"/>
+    </resultMap>
+
+    <select id="login" resultMap="accountMap">
+        SELECT * FROM account
+        <where>
+            <if test="body.id!=null and body.id!=''">
+                id = #{body.id};
+            </if>
+            <if test="body.email!=null and body.email!=''">
+                or email = #{body.email};
+            </if>
+            <if test="body.sign!=null and body.sign!=''">
+               or sign = #{body.sign};
+            </if>
+        </where>
+    </select>
+
+    <select id="query" resultType="int">
+        SELECT id FROM account where
+        <if test="body.phone!=null and body.phone!=''">
+            phone = #{body.phone};
+        </if>
+        <if test="body.email!=null and body.email!=''">
+            email = #{body.email};
+        </if>
+    </select>
+
+    <select id="queryByCode" resultMap="accountMap">
+        SELECT * FROM account where sign=#{code};
+    </select>
+
+    <!--    <insert id="register" parameterType="com.mdx.hubing.model.entity.AccountEntity">-->
+    <!--    <insert id="register" useGeneratedKeys="true" keyProperty="id" keyColumn="id">-->
+    <insert id="register">
+        insert into account
+        (uid,pwd,sign,phone,email,nickname,icon,tag,level,score,grade,channel,
+        share_code,create_date) values
+        (#{user.uid},#{user.pwd},#{user.sign},#{user.phone},#{user.email},#{user.nickname},
+        #{user.icon},#{user.tag},#{user.level},#{user.score},#{user.grade},#{user.channel},
+        #{user.shareCode},#{user.createDate});
+        <selectKey keyProperty="id" keyColumn="id" order="AFTER" resultType="int">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+    </insert>
+
+    <update id="updateAccount">
+        update account
+        <set>
+            <if test="body.pwd!=null">
+                pwd = #{body.pwd},
+            </if>
+            <if test="body.icon!=null">
+                icon = #{body.icon},
+            </if>
+            <if test="body.nickname!=null">
+                nickname = #{body.nickname},
+            </if>
+        </set>
+        where id = #{body.id};
+    </update>
+
+    <select id="reset" resultType="int">
+        SELECT count(*) FROM account;
+    </select>
+
+    <select id="logout" resultType="int">
+        SELECT count(*) FROM account;
+    </select>
+
+    <select id="accountNum" resultType="int">
+        SELECT count(*) FROM account;
+    </select>
+
+    <select id="accountAll" resultMap="accountMap">
+        SELECT * FROM account;
+    </select>
+</mapper>

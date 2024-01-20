@@ -3,32 +3,31 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.meng.store</groupId>
-    <artifactId>store</artifactId>
+    <groupId>com.mdx</groupId>
+    <artifactId>hubing</artifactId>
     <version>0.0.1</version>
     <packaging>pom</packaging>
-
-    <name>store</name>
-    <description>Demo project for Spring Boot</description>
+    <!--    <name>hubing</name>-->
+    <!--    <description>Demo project for Spring Boot</description>-->
 
     <parent>
-        <!-- lookup parent from repository -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.6</version>
-        <relativePath/>
+        <version>3.1.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <modules>
-        <module>store-main</module>
-        <module>store-common</module>
-        <module>store-security</module>
-        <module>store-auth</module>
+        <module>common</module>
+        <module>chat</module>
     </modules>
 
     <properties>
+        <skipTests>true</skipTests>
         <java.version>17</java.version>
-        <store-common.version>0.0.1</store-common.version>
+        <common.version>0.0.1</common.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencies>
@@ -39,6 +38,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+<!--    tomcat war 使用        -->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework.boot</groupId>-->
+<!--                    <artifactId>spring-boot-starter-tomcat</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,32 +53,32 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+<!-- tomcat war 配置 -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.tomcat</groupId>-->
+<!--            <artifactId>tomcat-api</artifactId>-->
+<!--            <version>9.0.83</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
             <!-- 通用模块 -->
             <dependency>
-                <groupId>com.meng.store</groupId>
-                <artifactId>store-common</artifactId>
-                <version>${store-common.version}</version>
+                <groupId>com.mdx.hubing</groupId>
+                <artifactId>common</artifactId>
+                <version>0.0.1</version>
             </dependency>
-            <!-- account模块 -->
-            <dependency>
-                <groupId>com.meng.store</groupId>
-                <artifactId>store-auth</artifactId>
-                <version>${store-common.version}</version>
-            </dependency>
-            <!-- security模块 -->
-            <dependency>
-                <groupId>com.meng.store</groupId>
-                <artifactId>store-security</artifactId>
-                <version>${store-common.version}</version>
-            </dependency>
+
 
             <!-- 数据库驱动 -->
             <dependency>
@@ -91,17 +97,18 @@
                 <artifactId>druid</artifactId>
                 <version>1.1.23</version>
             </dependency>
-            <!--             网络请求 -->
-            <dependency>
-                <groupId>com.squareup.okhttp3</groupId>
-                <artifactId>okhttp</artifactId>
-                <version>4.10.0</version>
-            </dependency>
+
             <!--  加密  -->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.15</version>
+            </dependency>
+            <!-- 网络请求  -->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>4.10.0</version>
             </dependency>
             <!-- Gson -->
             <dependency>
@@ -135,7 +142,20 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal><!--可以把依赖的包都打包到生成的Jar包中-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
             </plugin>
         </plugins>
     </build>
+
 </project>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mdx.hubing.model.mapper.SeatMapper">
+
+    <select id="querySeat" resultType="com.mdx.hubing.model.entity.SeatEntity">
+        SELECT * FROM shop_seat where sid=#{sid};
+    </select>
+
+    <select id="seatDetail" resultType="com.mdx.hubing.model.entity.SeatEntity">
+        SELECT * FROM shop_seat where id=#{id};
+    </select>
+
+    <insert id="addSeat">
+        insert into shop_seat (sid,num,status,used,intro,position) values
+        (#{body.sid}, #{body.num}, #{body.status}, #{body.used}, #{body.intro}, #{body.position});
+    </insert>
+
+    <update id="updateSeat">
+        update shop_seat
+        <set>
+            <if test="body.num!=null">
+                num=#{body.num},
+            </if>
+            <if test="body.status!=null">
+                status=#{body.status},
+            </if>
+            <if test="body.used!=null">
+                used=#{body.used},
+            </if>
+            <if test="body.intro!=null">
+                intro=#{body.intro},
+            </if>
+            <if test="body.position!=null">
+                position=#{body.position},
+            </if>
+        </set>
+        where id = #{body.id};
+    </update>
+
+    <delete id="deleteSeat">
+        delete form shop_seat where id=#{id}
+    </delete>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mdx.hubing.model.mapper.StaffMapper">
+
+    <select id="queryByUid" resultType="com.mdx.hubing.model.dto.StaffDao">
+        SELECT sf.*, shop.title shopName FROM shop_staff sf
+        LEFT JOIN shop ON (sf.sid=shop.id)
+        WHERE sf.uid=#{uid};
+    </select>
+
+    <select id="queryStaff" resultType="com.mdx.hubing.model.entity.StaffEntity">
+        SELECT * FROM shop_staff where sid=#{sid};
+    </select>
+
+    <select id="staffDetail" resultType="com.mdx.hubing.model.entity.StaffEntity">
+        SELECT * FROM shop_staff where id=#{id};
+    </select>
+
+    <insert id="addStaff">
+        insert into shop_staff (sid,uid,level,status,name,phone,intro) values
+        (#{body.sid},#{body.uid},#{body.level},#{body.status},#{body.name},#{body.phone},#{body.intro});
+    </insert>
+
+    <update id="updateStaff">
+        update shop_staff
+        <set>
+            <if test="body.level!=null">
+                level = #{body.level},
+            </if>
+            <if test="body.status!=null">
+                status = #{body.status},
+            </if>
+            <if test="body.name!=null">
+                name = #{body.name},
+            </if>
+            <if test="body.intro!=null and body.intro!=''">
+                intro = #{body.intro},
+            </if>
+            <if test="body.phone!=null and body.phone!=''">
+                phone = #{body.phone},
+            </if>
+        </set>
+        where id = #{body.id};
+    </update>
+
+    <delete id="deleteStaff">
+        delete form shop_staff where id=#{id}
+    </delete>
+</mapper>

@@ -1,0 +1,133 @@
+package com.mdx.hubing.module.network;
+
+import com.google.gson.Gson;
+import okhttp3.*;
+import okio.BufferedSink;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * Author: Meng
+ * Date: 2023-11-10
+ * Desc:
+ * https://square.github.io/okhttp/recipes/
+ */
+public class OkClient {
+    public static MediaType MEDIA_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
+    public static MediaType MEDIA_PNG = MediaType.parse("image/png");
+    public static MediaType MEDIA_JSON = MediaType.parse("application/json; charset=utf-8");
+    private static OkHttpClient okClient;
+
+    public static OkHttpClient client() {
+        if (okClient == null) {
+            create();
+        }
+        return okClient;
+    }
+
+    private static void create() {
+        okClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .callTimeout(20, TimeUnit.SECONDS)
+//                .addNetworkInterceptor(new NetInterceptor())
+                .addInterceptor(new LogInterceptor())
+                .build();
+    }
+
+
+    private void get(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        Response response = okClient.newCall(request).execute();
+        response.body().string();
+    }
+
+    private void post(String url, Object obj) throws IOException {
+        Gson gson = new Gson();
+        String json = gson.toJson(obj);
+        RequestBody body = RequestBody.create(json, MEDIA_JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .header("User-Agent", "OkHttp Headers.java")
+                .addHeader("Accept", "application/json; q=0.5")
+                .post(body)
+                .build();
+        Response response = okClient.newCall(request).execute();
+        response.body().string();
+// 写法2
+//        okClient.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(@NotNull Call call, @NotNull IOException e) {}
+//            @Override
+//            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {}
+//        });
+    }
+
+    private void form() {
+        RequestBody formBody = new FormBody.Builder()
+                .add("search", "Jurassic Park")
+                .build();
+        Request request = new Request.Builder()
+                .url("https://en.wikipedia.org/w/index.php")
+                .post(formBody)
+                .build();
+    }
+    private void file() {
+        File file = new File("README.png");
+        Request request = new Request.Builder()
+                .url("https://api.github.com/markdown/raw")
+                .post(RequestBody.create(MEDIA_PNG, file))
+                .build();
+    }
+    private void files() {
+        // Use the imgur image upload API as documented at https://api.imgur.com/endpoints/image
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("title", "Square Logo")
+                .addFormDataPart("image", "logo-square.png",
+                        RequestBody.create(MEDIA_PNG, new File("website/static/logo-square.png")))
+                .build();
+        String IMGUR_CLIENT_ID = "...";
+        Request request = new Request.Builder()
+                .header("Authorization", "Client-ID " + IMGUR_CLIENT_ID)
+                .url("https://api.imgur.com/3/image")
+                .post(requestBody)
+                .build();
+
+    }
+    private void markdown() throws IOException {
+        RequestBody requestBody = new RequestBody() {
+            @Override
+            public MediaType contentType() {
+                return MEDIA_MARKDOWN;
+            }
+
+            @Override
+            public void writeTo(BufferedSink sink) throws IOException {
+                sink.writeUtf8("Numbers\n");
+                sink.writeUtf8("-------\n");
+                for (int i = 2; i <= 997; i++) {
+                    sink.writeUtf8(String.format(" * %s = %s\n", i, factor(i)));
+                }
+            }
+
+            private String factor(int n) {
+                for (int i = 2; i < n; i++) {
+                    int x = n / i;
+                    if (x * i == n) return factor(x) + " × " + i;
+                }
+                return Integer.toString(n);
+            }
+        };
+
+        Request request = new Request.Builder()
+                .url("https://api.github.com/markdown/raw")
+                .post(requestBody)
+                .build();
+    }
+}

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mdx.hubing.model.mapper.EventMapper">
+
+    <select id="queryEvents" resultType="com.mdx.hubing.model.entity.EventEntity">
+        SELECT * FROM event_msg
+        <!--  SELECT * FROM event_msg where sid=#{sid}; -->
+        <!--  <trim prefix="WHERE" prefixOverrides="AND |OR "> 等价 -->
+        <where>
+            <if test="sid != 0">
+                sid = #{sid}
+            </if>
+        </where>
+    </select>
+
+    <select id="eventDetail" resultType="com.mdx.hubing.model.entity.EventEntity">
+        SELECT * FROM event_msg where id=#{id};
+    </select>
+
+    <insert id="addEvent">
+        insert into event_msg (sid,tag,value,url,intro) values
+        (#{body.sid},#{body.tag},#{body.value},#{body.url},#{body.intro});
+    </insert>
+
+    <update id="updateEvent2">
+        update event_msg
+        <set>
+            <!--   set 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号  -->
+            <if test="body.tag!=null and body.tag!=''">
+                tag = #{body.tag},
+            </if>
+            <if test="body.url!=null and body.url!=''">
+                url = #{body.url},
+            </if>
+            <if test="body.value!=null and body.value!=''">
+                value = #{body.value},
+            </if>
+            <if test="body.intro!=null and body.intro!=''">
+                intro = #{body.intro},
+            </if>
+        </set>
+        where id = #{body.id};
+    </update>
+
+    <update id="updateEvent">
+        update event_msg
+        <trim prefix="SET" suffixOverrides=",">
+            <!--  通过使用trim元素来达到同样的效果，删掉额外的逗号  -->
+            <if test="body.tag!=null and body.tag!=''">
+                tag = #{body.tag},
+            </if>
+            <if test="body.url!=null and body.url!=''">
+                url = #{body.url},
+            </if>
+            <if test="body.value!=null and body.value!=''">
+                value = #{body.value},
+            </if>
+            <if test="body.intro!=null and body.intro!=''">
+                intro = #{body.intro},
+            </if>
+        </trim>
+        where id = #{body.id};
+    </update>
+
+    <delete id="deleteEvent">
+        delete form event_msg where id=#{id}
+    </delete>
+
+</mapper>
